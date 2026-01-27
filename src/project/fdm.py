@@ -33,8 +33,16 @@ def solve_heat_equation(
     # Oppgave 3.2: Start
     #######################################################################
 
-    # Placeholder initialization — replace this with your implementation
-    T = np.zeros((cfg.nt, cfg.nx, cfg.ny))
+    A = _build_matrix(cfg, dx, dy, dt)
+    T = np.full((cfg.nt, cfg.nx, cfg.ny), cfg.T_outside)
+    
+   
+    for idx, time_val in enumerate(t[:-1]):
+        T_k = T[idx, :, :]
+        b = _build_rhs(cfg, T_k, X, Y, dx, dy, dt, t[idx+1])
+        T_k_next = np.linalg.solve(A, b)
+        T_k_next = T_k_next.reshape((cfg.nx, cfg.ny))
+        T[idx+1] = T_k_next  
 
     #######################################################################
     # Oppgave 3.2: Slutt
