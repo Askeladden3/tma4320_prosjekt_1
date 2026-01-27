@@ -84,8 +84,14 @@ def forward(
     # Oppgave 4.1: Start
     #######################################################################
 
+    a = jnp.stack([x, y, t], axis=-1)
+    for (w,b) in nn_params:
+        a = jax.numpy.tanh(w @ a + b)
+    y_pred = a
+
+
     # Placeholder initialization — replace this with your implementation
-    out = None
+    out = y_pred
 
     #######################################################################
     # Oppgave 4.1: Slutt

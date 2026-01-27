@@ -40,8 +40,7 @@ def solve_heat_equation(
     for idx, time_val in enumerate(t[:-1]):
         T_k = T[idx, :, :]
         b = _build_rhs(cfg, T_k, X, Y, dx, dy, dt, t[idx+1])
-        T_k_next = np.linalg.solve(A, b)
-        T_k_next = T_k_next.reshape((cfg.nx, cfg.ny))
+        T_k_next = np.linalg.solve(A, b).reshape((cfg.nx, cfg.ny))
         T[idx+1] = T_k_next  
 
     #######################################################################
