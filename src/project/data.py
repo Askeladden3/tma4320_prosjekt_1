@@ -6,7 +6,6 @@ import numpy as np
 from .config import Config
 from .fdm import solve_heat_equation
 
-
 def generate_training_data(
     cfg: Config,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, jnp.ndarray]:
@@ -24,9 +23,11 @@ def generate_training_data(
     #######################################################################
     # Oppgave 3.3: Start
     #######################################################################
+    x,y,t,T_fdm = solve_heat_equation(cfg)
 
-    # Placeholder initialization — replace this with your implementation
-    x, y, t, T_fdm, sensor_data = None, None, None, None, None
+    sensor_data = _generate_sensor_data(x,y,t,T_fdm,cfg)
+
+
 
     #######################################################################
     # Oppgave 3.3: Slutt

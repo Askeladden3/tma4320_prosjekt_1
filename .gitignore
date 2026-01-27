@@ -1,5 +1,5 @@
 # Include the prosjekt.pdf
-!prosjekt.pdf
+prosjekt.pdf
 
 # MacOS specific
 .DS_Store
@@ -14,6 +14,7 @@ wheels/
 
 # Virtual environments
 .venv
+.vscode
 
 # Caching
 .pytest_cache
