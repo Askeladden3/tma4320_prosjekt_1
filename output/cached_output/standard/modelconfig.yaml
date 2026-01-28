@@ -1,0 +1,62 @@
+domain:
+  x_max: 10.0
+  x_min: 0.0
+  y_max: 5.0
+  y_min: 0.0
+grid:
+  nt: 50
+  nx: 50
+  ny: 25
+physics:
+  T_outside: 0.0
+  alpha: 0.25
+  h: 0.0
+  k: 0.04
+sensors:
+  locations:
+  - - 5.0
+    - 2.5
+  - - 5.0
+    - 5.0
+  - - 5.0
+    - 0.0
+  - - 0.0
+    - 2.5
+  - - 10.0
+    - 2.5
+  - - 0.0
+    - 0.0
+  - - 0.0
+    - 5.0
+  - - 10.0
+    - 0.0
+  - - 10.0
+    - 5.0
+  measure_rate: 1.0
+  noise_std: 0.5
+source:
+  locations:
+  - - 5.0
+    - 2.5
+  sizes:
+  - 0.5
+  strength: 15.0
+time:
+  t_max: 24.0
+  t_min: 0.0
+training:
+  lambda_bc: 1.0
+  lambda_data: 1.0
+  lambda_ic: 1.0
+  lambda_physics: 1.0
+  layer_sizes:
+  - 3
+  - 32
+  - 32
+  - 1
+  learning_rate: 0.001
+  num_bc: 512
+  num_collocation: 4096
+  num_epochs: 3000
+  num_ic: 512
+  seed: 42
