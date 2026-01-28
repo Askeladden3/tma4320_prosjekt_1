@@ -20,6 +20,32 @@ def main():
     #######################################################################
     # Oppgave 4.4: Start
     #######################################################################
+    x, y, t, T_fdm, sensor_data = generate_training_data(cfg)
+
+    nn_params, loss_dict = train_nn(sensor_data, cfg)
+
+    T_pred = predict_grid(nn_params, x, y, t, cfg)
+
+    print("\nGenerating Neural Net temp visualizations...")
+    plot_snapshots(
+        x,
+        y,
+        t,
+        T_pred,
+        save_path="output/nn/nn_snapshots.png",
+    )
+    create_animation(
+        x, y, t, T_pred, title="NN", save_path="output/nn/nn_animation.gif"
+    )
+
+    #X-akse i plottene
+    epoch_list = np.arange(0, cfg.num_epochs)
+
+    plt.plot(epoch_list, loss_dict['total'])
+    
+
+    plt.show()
+
 
     #######################################################################
     # Oppgave 4.4: Slutt
