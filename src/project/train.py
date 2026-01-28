@@ -43,7 +43,7 @@ def train_nn(
 
   
 
-    for i in range(cfg.num_epochs):
+    for _ in tqdm(range(cfg.num_epochs), desc="Training NN"):
         ic_epoch, _ = sample_ic(key, cfg)
         x = 0.0
         (loss_tot, loss_parts), grads = (jax.value_and_grad(total_loss, argnums=0, has_aux=True)(nn_params, sensor_data, ic_epoch))
@@ -52,8 +52,7 @@ def train_nn(
         losses["ic"].append(loss_parts[1])
         nn_params, adam_state = adam_step(nn_params, grads, adam_state, lr=cfg.learning_rate)
     
-    from tqdm import tqdm
-    for _ in tqdm(range(cfg.num_epochs), desc="Training NN"):
+
         ...
 
     #######################################################################
