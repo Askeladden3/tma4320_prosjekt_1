@@ -24,14 +24,13 @@ def save_arch(folder_name, model_type):
     cfg = load_config("config.yaml")
     x, y, t, T_fdm, sensor_data = generate_training_data(cfg)
     if model_type == 'nn':
-        nn_params, loss_dict = train_nn(sensor_data, cfg)
+        nn_params= train_nn(sensor_data, cfg)
 
     elif model_type == 'pinn':
-        pinn_params, loss_dict = train_pinn(sensor_data, cfg)
+        pinn_params = train_pinn(sensor_data, cfg)
     else:
         print('Invalid model type')
         return None
-    loss_df = pd.DataFrame(loss_dict)
 
     nn_dict = {}
     model_params = nn_params if model_type == 'nn' else pinn_params['nn']
@@ -41,7 +40,6 @@ def save_arch(folder_name, model_type):
 
     nn_df = pd.DataFrame(nn_dict)
     nn_df.to_csv(full_dir + f'\\{model_type}_params.csv')
-    loss_df.to_csv(full_dir + f'\\{model_type}_losses.csv')
 
     with open("config.yaml") as f:
         data = yaml.safe_load(f)
