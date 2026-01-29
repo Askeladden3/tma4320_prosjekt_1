@@ -66,4 +66,10 @@ def load_arch(folder_name, model_type):
 
 
 
+def main():
 
+
+    save_arch("Fast_pinn", "pinn")
+
+if __name__ == "main":
+    main()

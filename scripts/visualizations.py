@@ -73,7 +73,7 @@ def loss_plot(folder_name, model_type):
 #Eksempelkjøring load_arch
 #nn_params, config = load_arch('standard')
 
-difference_plot('standard', 'pinn')
+create_animations('Fast_pinn', 'pinn')
 
 #loss_plot('standard')
 

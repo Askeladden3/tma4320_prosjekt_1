@@ -94,7 +94,7 @@ def train_pinn(sensor_data: jnp.ndarray, cfg: Config) -> dict:
         ic_epoch, _ = sample_ic(key, cfg)
         interior_epoch, _ = sample_interior(key, cfg)
         bc_epoch, _ = sample_bc(key, cfg)
-        grads = (jax.grad(total_loss, argnums=0, has_aux=True)(pinn_params, sensor_data, ic_epoch, interior_epoch, bc_epoch))
+        grads = (jax.grad(total_loss, argnums=0)(pinn_params, sensor_data, ic_epoch, interior_epoch, bc_epoch))
         
         pinn_params, opt_state = adam_step(pinn_params, grads, opt_state, lr=cfg.learning_rate)
 
