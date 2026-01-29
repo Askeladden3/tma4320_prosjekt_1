@@ -11,7 +11,7 @@ from .model import init_nn_params, init_pinn_params
 from .optim import adam_step, init_adam
 from .sampling import sample_bc, sample_ic, sample_interior
 
-@jax.jit
+
 def train_nn(
     sensor_data: jnp.ndarray, cfg: Config
 ) -> tuple[list[tuple[jnp.ndarray, jnp.ndarray]], dict]:
@@ -35,7 +35,6 @@ def train_nn(
     # Oppgave 4.3: Start
     #######################################################################
 
-    @jax.jit
     def total_loss(nn_params, sensor_data, ic_points):
         dl = data_loss(nn_params, sensor_data, cfg)
         icl = ic_loss(nn_params,ic_points,cfg)
@@ -91,7 +90,7 @@ def train_pinn(sensor_data: jnp.ndarray, cfg: Config) -> tuple[dict, dict]:
         tot_loss =  cfg.lambda_data*dl + cfg.lambda_ic*ic + cfg.lambda_bc*bc + cfg.lambda_physics * ph
         return tot_loss, (tot_loss, dl, ph, ic, bc)
   
-    for _ in tqdm(range(cfg.num_epochs), desc="Training NN"):
+    for _ in tqdm(range(cfg.num_epochs), desc="Training PINN"):
         ic_epoch, _ = sample_ic(key, cfg)
         interior_epoch, _ = sample_interior(key, cfg)
         bc_epoch, _ = sample_bc(key, cfg)
