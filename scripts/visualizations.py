@@ -73,8 +73,10 @@ def loss_plot(folder_name, model_type):
 #Eksempelkjøring load_arch
 #nn_params, config = load_arch('standard')
 
-create_animations('Fast_pinn', 'pinn')
+def main():
+    create_animations('Fast_pinn_cardinal_Sensors', 'pinn')
 
-#loss_plot('standard')
 
+if __name__ == "__main__":
+    main()
     

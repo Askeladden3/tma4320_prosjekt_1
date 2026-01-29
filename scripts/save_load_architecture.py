@@ -41,6 +41,7 @@ def save_arch(folder_name, model_type):
     nn_df = pd.DataFrame(nn_dict)
     nn_df.to_csv(full_dir + f'\\{model_type}_params.csv')
 
+
     with open("config.yaml") as f:
         data = yaml.safe_load(f)
     with open(full_dir + '\\modelconfig.yaml', 'w') as fil:
@@ -67,9 +68,7 @@ def load_arch(folder_name, model_type):
 
 
 def main():
+    save_arch("Fast_pinn_cardinal_Sensors", "pinn")
 
-
-    save_arch("Fast_pinn", "pinn")
-
-if __name__ == "main":
+if __name__ == "__main__":
     main()
