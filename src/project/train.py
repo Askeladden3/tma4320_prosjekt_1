@@ -11,7 +11,7 @@ from .model import init_nn_params, init_pinn_params
 from .optim import adam_step, init_adam
 from .sampling import sample_bc, sample_ic, sample_interior
 
-
+@jax.jit
 def train_nn(
     sensor_data: jnp.ndarray, cfg: Config
 ) -> tuple[list[tuple[jnp.ndarray, jnp.ndarray]], dict]:
@@ -45,7 +45,6 @@ def train_nn(
     from tqdm import tqdm
     for _ in tqdm(range(cfg.num_epochs), desc="Training NN"):
         ic_epoch, _ = sample_ic(key, cfg)
-        x = 0.0
         (loss_tot, loss_parts), grads = (jax.value_and_grad(total_loss, argnums=0, has_aux=True)(nn_params, sensor_data, ic_epoch))
         losses["total"].append(loss_tot)
         losses["data"].append(loss_parts[0])
@@ -79,6 +78,28 @@ def train_pinn(sensor_data: jnp.ndarray, cfg: Config) -> tuple[dict, dict]:
     #######################################################################
     # Oppgave 5.3: Start
     #######################################################################
+
+
+    def total_loss(pinn_params, sensor_data, ic_points, interior_points, bc_points):
+        dl = data_loss(pinn_params, sensor_data, cfg)
+        icl = ic_loss(pinn_params,ic_points,cfg)
+        ph = physics_loss(pinn_params, interior_points, cfg)
+        bc = bc_loss(pinn_params, bc_points, cfg)
+        tot_loss =  cfg.lambda_data*dl + cfg.lambda_ic*icl + cfg.lambda_bc*bc + cfg.lambda_physics * ph
+        return tot_loss, (dl, icl, ph, bc)
+  
+    for _ in tqdm(range(cfg.num_epochs), desc="Training NN"):
+        ic_epoch, _ = sample_ic(key, cfg)
+        interior_epoch, _ = sample_interior(key, cfg)
+        bc_epoch, key = sample_bc(key, cfg)
+        (loss_tot, loss_parts), grads = (jax.value_and_grad(total_loss, argnums=0, has_aux=True)(pinn_params, sensor_data, ic_epoch, interior_epoch, bc_epoch))
+        
+        losses["total"].append(loss_tot)
+        keys = ["data", "ic", "ph", "bc"]
+        for key, value in zip(keys, loss_parts):
+            losses[key].append(value)
+            
+        pinn_params, opt_state = adam_step(pinn_params, grads, opt_state, lr=cfg.learning_rate)
 
     # Update the nn_params and losses dictionary
 
