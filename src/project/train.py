@@ -41,8 +41,6 @@ def train_nn(
         icl = ic_loss(nn_params,ic_points,cfg)
         return cfg.lambda_data*dl + cfg.lambda_ic*icl, (dl, icl)
 
-  
-    from tqdm import tqdm
     for _ in tqdm(range(cfg.num_epochs), desc="Training NN"):
         ic_epoch, _ = sample_ic(key, cfg)
         (loss_tot, loss_parts), grads = (jax.value_and_grad(total_loss, argnums=0, has_aux=True)(nn_params, sensor_data, ic_epoch))
