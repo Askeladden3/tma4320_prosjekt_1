@@ -28,12 +28,26 @@ def difference_plot(folder_name, model_type):
 
     T_diff = T_fdm - T_pred
 
-    create_animation(
-        x, y, t, T_pred, title="Differansetemp", save_path=full_dir + "\\difftemp.gif"
-    )
 
     plt.imshow(T_diff[0, :, :])
     plt.show()
+
+def create_animations(folder_name, model_type):
+    full_dir = r'output\\cached_output' + '\\' + folder_name
+
+    nn_params, cfg = load_arch(folder_name, model_type)
+    
+    x, y, t, T_fdm, sensor_data = generate_training_data(cfg)
+    T_pred = predict_grid(nn_params, x, y, t, cfg)
+
+    T_diff = T_fdm - T_pred
+
+    create_animation(
+        x, y, t, T_diff, title="Differansetemp", save_path=full_dir + f"\\{model_type}_difftemp.gif"
+    )
+    create_animation(
+        x, y, t, T_pred, title="Predikert temperatur over tid", save_path=full_dir + f"\\{model_type}_temppred.gif"
+    )
 
 def loss_plot(folder_name, model_type):
     'Plotter total loss over epokene'
