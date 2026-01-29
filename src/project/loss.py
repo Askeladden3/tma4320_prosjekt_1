@@ -90,9 +90,30 @@ def physics_loss(pinn_params, interior_points, cfg: Config):
     #######################################################################
     # Oppgave 5.2: Start
     #######################################################################
+    N_ph = interior_points.shape[0]
+    nn_params = pinn_params["nn"]
 
-    # Placeholder initialization — replace this with your implementation
-    physics_loss_val = None
+    def calc_residuals(pinn_params, x, y, t, cfg):
+
+        def forward_point(x: float, y: float, t:float):
+            return forward(pinn_params["nn"], x, y, t, cfg)
+        
+        f_t = grad(forward_point,2)(x,y,t)
+        f_xx = grad(grad(forward_point,0),0)(x,y,t)
+        f_yy = grad(grad(forward_point,1),1)(x,y,t)
+
+        q = cfg.is_source(x, y)*jnp.exp(pinn_params['log_power'])
+
+        scaled_laplacian = jnp.exp(pinn_params["log_alpha"])*(f_xx + f_yy)
+        res = f_t + scaled_laplacian + q
+
+        return res
+
+
+    residuals = vmap(
+        lambda xi, yi, ti: calc_residuals(pinn_params, xi, yi, ti, cfg)
+    )(x,y,t)
+    physics_loss_val = 1/N_ph * jnp.sum(residuals**2)
 
     #######################################################################
     # Oppgave 5.2: Slutt
