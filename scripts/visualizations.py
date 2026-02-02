@@ -8,6 +8,8 @@ import yaml
 import jax
 import jax.numpy as jnp
 from jax import jit
+import argparse
+
 
 from project import (
     generate_training_data,
@@ -74,7 +76,10 @@ def loss_plot(folder_name, model_type):
 #nn_params, config = load_arch('standard')
 
 def main():
-    create_animations('Fast_pinn_cardinal_Sensors', 'pinn')
+    parser = argparse.ArgumentParser(description='instructions')
+    parser.add_argument("-fname", action = "store", dest="filename", default="general_output" )
+    args = parser.parse_args()
+    create_animations(args.filename, 'pinn')
 
 
 if __name__ == "__main__":
