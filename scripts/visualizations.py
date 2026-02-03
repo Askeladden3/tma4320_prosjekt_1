@@ -34,7 +34,7 @@ def difference_plot(folder_name, model_type):
     plt.imshow(T_diff[0, :, :])
     plt.show()
 
-def create_animations(folder_name, model_type):
+def create_animations(folder_name, model_type, makegif):
     full_dir = r'output\\cached_output' + '\\' + folder_name
 
     nn_params, cfg = load_arch(folder_name, model_type)
@@ -43,6 +43,9 @@ def create_animations(folder_name, model_type):
     T_pred = predict_grid(nn_params, x, y, t, cfg)
 
     T_diff = T_fdm - T_pred
+
+    if makegif:
+        plot_snapshots(x,y,t,T_pred, "Predikert temperatur over tid", save_path=full_dir + f"\\{model_type}_predtempsnapshot.png")
 
     create_animation(
         x, y, t, T_diff, title="Differansetemp", save_path=full_dir + f"\\{model_type}_difftemp.gif"
@@ -78,8 +81,10 @@ def loss_plot(folder_name, model_type):
 def main():
     parser = argparse.ArgumentParser(description='instructions')
     parser.add_argument("-fname", action = "store", dest="filename", default="general_output" )
+    parser.add_argument("-g", action = "store_true", dest="makegif")
     args = parser.parse_args()
-    create_animations(args.filename, 'pinn')
+    create_animations(args.filename, 'pinn', args.makegif)
+
 
 
 if __name__ == "__main__":

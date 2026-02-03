@@ -42,6 +42,15 @@ def save_arch(folder_name, model_type):
     nn_df = pd.DataFrame(nn_dict)
     nn_df.to_csv(full_dir + f'\\{model_type}_params.csv')
 
+    fysikk_param = {}
+    for key, val in pinn_params.items():
+        if key != 'nn':
+            param = np.exp(val)
+            fysikk_param[key.split("_")[-1]] = param
+
+    fys_df = pd.DataFrame(fysikk_param)
+    fys_df.to_csv(full_dir + f'\\{model_type}_fysikk_params.csv')
+
 
     with open("config.yaml") as f:
         data = yaml.safe_load(f)
