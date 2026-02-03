@@ -48,10 +48,10 @@ def create_animations(folder_name, model_type, makegif):
         plot_snapshots(x,y,t,T_pred, "Predikert temperatur over tid", save_path=full_dir + f"\\{model_type}_predtempsnapshot.png")
 
     create_animation(
-        x, y, t, T_diff, title="Differansetemp", save_path=full_dir + f"\\{model_type}_difftemp.gif"
+        x, y, t, T_diff, -10, 10, title="Differansetemp", cmap = "seismic", save_path=full_dir + f"\\{model_type}_difftemp.gif"
     )
     create_animation(
-        x, y, t, T_pred, title="Predikert temperatur over tid", save_path=full_dir + f"\\{model_type}_temppred.gif"
+        x, y, t, T_pred, -2, 30, title="Predikert temperatur over tid", save_path=full_dir + f"\\{model_type}_temppred.gif"
     )
 
 def loss_plot(folder_name, model_type):
