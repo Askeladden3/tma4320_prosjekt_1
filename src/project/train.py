@@ -60,7 +60,7 @@ def train_nn(
     return nn_params, {k: jnp.array(v) for k, v in losses.items()}
 
 
-def train_pinn(sensor_data: jnp.ndarray, cfg: Config) -> dict:
+def train_pinn(sensor_data: jnp.ndarray, cfg: Config) -> tuple:
     """Train a physics-informed neural network.
 
     Args:
@@ -88,13 +88,22 @@ def train_pinn(sensor_data: jnp.ndarray, cfg: Config) -> dict:
         ph = physics_loss(pinn_params, interior_points, cfg)
         bc = bc_loss(pinn_params, bc_points, cfg)
         tot_loss =  cfg.lambda_data*dl + cfg.lambda_ic*ic + cfg.lambda_bc*bc + cfg.lambda_physics * ph
-        return tot_loss
+        return tot_loss, (tot_loss, dl, ph, ic, bc)
   
+    i = 0
     for _ in tqdm(range(cfg.num_epochs), desc="Training PINN"):
+        i += 1
         ic_epoch, _ = sample_ic(key, cfg)
         interior_epoch, _ = sample_interior(key, cfg)
         bc_epoch, _ = sample_bc(key, cfg)
-        grads = (jax.grad(total_loss, argnums=0)(pinn_params, sensor_data, ic_epoch, interior_epoch, bc_epoch))
+        loss_parts, grads = jax.value_and_grad(total_loss, argnums=0, has_aux=True)(pinn_params, sensor_data, ic_epoch, interior_epoch, bc_epoch)
+        loss_parts = loss_parts[1]
+        if jnp.remainder(i, 1) == 0:
+            losses['total'].append(loss_parts[0])
+            losses['data'].append(loss_parts[1])
+            losses['physics'].append(loss_parts[2])
+            losses['ic'].append(loss_parts[3])
+            losses['bc'].append(loss_parts[4])
         
         pinn_params, opt_state = adam_step(pinn_params, grads, opt_state, lr=cfg.learning_rate)
 
@@ -102,4 +111,4 @@ def train_pinn(sensor_data: jnp.ndarray, cfg: Config) -> dict:
     # Oppgave 5.3: Slutt
     #######################################################################
 
-    return pinn_params
+    return pinn_params, losses

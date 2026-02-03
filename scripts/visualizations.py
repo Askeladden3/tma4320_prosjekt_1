@@ -59,14 +59,19 @@ def loss_plot(folder_name, model_type):
     full_dir = r'output\\cached_output' + '\\' + folder_name
 
     nn_params, cfg = load_arch(folder_name, model_type)
-    loss_df = pd.read_csv(full_dir + '\\losses.csv')
+    loss_df = pd.read_csv(full_dir + f'\\{model_type}_losses.csv')
+    loss_df = loss_df.drop(columns=[loss_df.columns[0]]) 
 
     epoker = np.arange(0, cfg.num_epochs)
     plt.title('Total loss over epoker')
     plt.ylabel('total loss')
     plt.xlabel('epoke')
-    plt.plot(epoker, loss_df['total'])
-    plt.show()
+    plt.grid()
+    for loss_type, val in loss_df.items():
+        print(loss_type)
+        plt.plot(epoker, val, label=loss_type)
+    plt.legend()
+    plt.savefig(full_dir + f'\\{model_type}_lossplot.png')
    
 
 
@@ -82,8 +87,11 @@ def main():
     parser = argparse.ArgumentParser(description='instructions')
     parser.add_argument("-fname", action = "store", dest="filename", default="general_output" )
     parser.add_argument("-g", action = "store_true", dest="makegif")
+    parser.add_argument("-noani", action = "store_true", dest="dont_make_animation")
     args = parser.parse_args()
-    create_animations(args.filename, 'pinn', args.makegif)
+    if not args.dont_make_animation:
+        create_animations(args.filename, 'pinn', args.makegif)
+    loss_plot(args.filename, 'pinn')
 
 
 

@@ -25,10 +25,10 @@ def save_arch(folder_name, model_type):
     cfg = load_config("config.yaml")
     x, y, t, T_fdm, sensor_data = generate_training_data(cfg)
     if model_type == 'nn':
-        nn_params= train_nn(sensor_data, cfg)
+        nn_params, losses = train_nn(sensor_data, cfg)
 
     elif model_type == 'pinn':
-        pinn_params = train_pinn(sensor_data, cfg)
+        pinn_params, losses = train_pinn(sensor_data, cfg)
     else:
         print('Invalid model type')
         return None
@@ -42,14 +42,19 @@ def save_arch(folder_name, model_type):
     nn_df = pd.DataFrame(nn_dict)
     nn_df.to_csv(full_dir + f'\\{model_type}_params.csv')
 
-    fysikk_param = {}
-    for key, val in pinn_params.items():
-        if key != 'nn':
-            param = np.exp(val)
-            fysikk_param[key.split("_")[-1]] = param
+    if model_type == 'pinn':
+        fysikk_param = {}
+        for key, val in pinn_params.items():
+            if key != 'nn':
+                param = np.exp(val)
+                fysikk_param[key.split("_")[-1]] = param
 
-    fys_df = pd.DataFrame(fysikk_param)
-    fys_df.to_csv(full_dir + f'\\{model_type}_fysikk_params.csv')
+        fys_df = pd.DataFrame(fysikk_param)
+        fys_df.to_csv(full_dir + f'\\{model_type}_fysikk_params.csv')
+
+
+    loss_df = pd.DataFrame(losses)
+    loss_df.to_csv(full_dir + f'\\{model_type}_losses.csv')
 
 
     with open("config.yaml") as f:
