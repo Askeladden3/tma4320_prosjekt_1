@@ -66,10 +66,13 @@ def create_animation(
     y,
     t,
     T,
+    vmin,
+    vmax,
     title="Temperature",
     cmap="hot",
     save_path="output/animation.gif",
     fps=10,
+    
 ):
     """Create animation of temperature field over time.
 
@@ -87,7 +90,7 @@ def create_animation(
     fig, ax = plt.subplots(figsize=(8, 5))
     X, Y = np.meshgrid(x, y, indexing="ij")
 
-    vmin, vmax = T.min(), T.max()
+    #vmin, vmax = T.min(), T.max()
     im = ax.pcolormesh(X, Y, T[0], shading="auto", cmap=cmap, vmin=vmin, vmax=vmax)
     ax.set_xlabel("x (m)")
     ax.set_ylabel("y (m)")
