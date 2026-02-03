@@ -11,7 +11,7 @@ from .model import init_nn_params, init_pinn_params
 from .optim import adam_step, init_adam
 from .sampling import sample_bc, sample_ic, sample_interior
 
-@jax.jit
+
 def train_nn(
     sensor_data: jnp.ndarray, cfg: Config
 ) -> tuple[list[tuple[jnp.ndarray, jnp.ndarray]], dict]:
@@ -35,11 +35,12 @@ def train_nn(
     # Oppgave 4.3: Start
     #######################################################################
 
-    @jax.jit
     def total_loss(nn_params, sensor_data, ic_points):
         dl = data_loss(nn_params, sensor_data, cfg)
         icl = ic_loss(nn_params,ic_points,cfg)
         return cfg.lambda_data*dl + cfg.lambda_ic*icl, (dl, icl)
+
+  
 
     for _ in tqdm(range(cfg.num_epochs), desc="Training NN"):
         ic_epoch, _ = sample_ic(key, cfg)
@@ -48,6 +49,9 @@ def train_nn(
         losses["data"].append(loss_parts[0])
         losses["ic"].append(loss_parts[1])
         nn_params, adam_state = adam_step(nn_params, grads, adam_state, lr=cfg.learning_rate)
+    
+
+        ...
 
     #######################################################################
     # Oppgave 4.3: Slutt
@@ -56,7 +60,7 @@ def train_nn(
     return nn_params, {k: jnp.array(v) for k, v in losses.items()}
 
 
-def train_pinn(sensor_data: jnp.ndarray, cfg: Config) -> tuple[dict, dict]:
+def train_pinn(sensor_data: jnp.ndarray, cfg: Config) -> dict:
     """Train a physics-informed neural network.
 
     Args:
@@ -77,24 +81,20 @@ def train_pinn(sensor_data: jnp.ndarray, cfg: Config) -> tuple[dict, dict]:
     # Oppgave 5.3: Start
     #######################################################################
 
-
+    @jax.jit
     def total_loss(pinn_params, sensor_data, ic_points, interior_points, bc_points):
         dl = data_loss(pinn_params['nn'], sensor_data, cfg)
         ic = ic_loss(pinn_params['nn'],ic_points,cfg)
         ph = physics_loss(pinn_params, interior_points, cfg)
         bc = bc_loss(pinn_params, bc_points, cfg)
         tot_loss =  cfg.lambda_data*dl + cfg.lambda_ic*ic + cfg.lambda_bc*bc + cfg.lambda_physics * ph
-        return tot_loss, (tot_loss, dl, ph, ic, bc)
+        return tot_loss
   
-    for _ in tqdm(range(cfg.num_epochs), desc="Training NN"):
+    for _ in tqdm(range(cfg.num_epochs), desc="Training PINN"):
         ic_epoch, _ = sample_ic(key, cfg)
         interior_epoch, _ = sample_interior(key, cfg)
         bc_epoch, _ = sample_bc(key, cfg)
-        (loss_tot, loss_parts), grads = (jax.value_and_grad(total_loss, argnums=0, has_aux=True)(pinn_params, sensor_data, ic_epoch, interior_epoch, bc_epoch))
-
-        keys = losses.keys()
-        for dict_key, value in zip(keys, loss_parts):
-            losses[dict_key].append(value)
+        grads = (jax.grad(total_loss, argnums=0)(pinn_params, sensor_data, ic_epoch, interior_epoch, bc_epoch))
         
         pinn_params, opt_state = adam_step(pinn_params, grads, opt_state, lr=cfg.learning_rate)
 
@@ -102,4 +102,4 @@ def train_pinn(sensor_data: jnp.ndarray, cfg: Config) -> tuple[dict, dict]:
     # Oppgave 5.3: Slutt
     #######################################################################
 
-    return pinn_params, {k: jnp.array(v) for k, v in losses.items()}
+    return pinn_params

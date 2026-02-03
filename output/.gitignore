@@ -2,3 +2,5 @@
 *.pdf
 *.png
 *.gif
+*.csv
+cached_output/

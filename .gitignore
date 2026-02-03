@@ -20,5 +20,8 @@ wheels/
 .pytest_cache
 .ruff_cache
 
+#our output
+cached_output/
+
 # AI
 .claude
