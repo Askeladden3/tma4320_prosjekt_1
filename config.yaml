@@ -48,10 +48,10 @@ sensors:
     - [5.0, 0.0]
     - [0.0, 2.5]
     - [10.0, 2.5]
-    #- [0.0, 0.0]
-    #- [0.0, 5.0]
-    #- [10.0, 0.0]
-    #- [10.0, 5.0]
+    - [0.0, 0.0]
+    - [0.0, 5.0]
+    - [10.0, 0.0]
+    - [10.0, 5.0]
     
 
 # Training parameters
@@ -62,7 +62,7 @@ training:
   seed: 42
 
   # Loss weights
-  lambda_physics: 3.0
+  lambda_physics: 1.0
   lambda_ic:  1.0
   lambda_bc: 1.0
   lambda_data: 1.0
