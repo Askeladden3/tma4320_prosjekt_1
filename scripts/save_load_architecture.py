@@ -85,10 +85,11 @@ def load_arch(folder_name, model_type):
 def main():
     parser = argparse.ArgumentParser(description='instructions')
     parser.add_argument("-fname", action = "store", dest="filename", default="general_output" )
+    parser.add_argument("-model", action = "store", dest="model_type", default="pinn")
     args = parser.parse_args()
 
   
-    save_arch(args.filename, "pinn")
+    save_arch(args.filename, args.model_type)
 
 if __name__ == "__main__":
     main()

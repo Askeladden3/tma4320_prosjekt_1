@@ -51,7 +51,7 @@ def create_animations(folder_name, model_type, makegif):
         x, y, t, T_diff, -10, 10, title="Differansetemp", cmap = "seismic", save_path=full_dir + f"\\{model_type}_difftemp.gif"
     )
     create_animation(
-        x, y, t, T_pred, -2, 30, title="Predikert temperatur over tid", save_path=full_dir + f"\\{model_type}_temppred.gif"
+        x, y, t, T_pred, -2, 30, title="Predikert temperatur over tid", save_path=full_dir + f"\\{model_type}_temppred.gif", fps=120
     )
 
 def loss_plot(folder_name, model_type):
@@ -68,7 +68,6 @@ def loss_plot(folder_name, model_type):
     plt.xlabel('epoke')
     plt.grid()
     for loss_type, val in loss_df.items():
-        print(loss_type)
         plt.plot(epoker, val, label=loss_type)
     plt.legend()
     plt.savefig(full_dir + f'\\{model_type}_lossplot.png')
@@ -88,10 +87,11 @@ def main():
     parser.add_argument("-fname", action = "store", dest="filename", default="general_output" )
     parser.add_argument("-g", action = "store_true", dest="makegif")
     parser.add_argument("-noani", action = "store_true", dest="dont_make_animation")
+    parser.add_argument("-model", action = "store", dest="model_type", default="pinn")
     args = parser.parse_args()
     if not args.dont_make_animation:
-        create_animations(args.filename, 'pinn', args.makegif)
-    loss_plot(args.filename, 'pinn')
+        create_animations(args.filename, args.model_type, args.makegif)
+    loss_plot(args.filename, args.model_type)
 
 
 

@@ -35,6 +35,7 @@ def train_nn(
     # Oppgave 4.3: Start
     #######################################################################
 
+    @jax.jit
     def total_loss(nn_params, sensor_data, ic_points):
         dl = data_loss(nn_params, sensor_data, cfg)
         icl = ic_loss(nn_params,ic_points,cfg)
