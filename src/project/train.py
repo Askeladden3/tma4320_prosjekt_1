@@ -11,7 +11,7 @@ from .model import init_nn_params, init_pinn_params
 from .optim import adam_step, init_adam
 from .sampling import sample_bc, sample_ic, sample_interior
 
-@jax.jit
+
 def train_nn(
     sensor_data: jnp.ndarray, cfg: Config
 ) -> tuple[list[tuple[jnp.ndarray, jnp.ndarray]], dict]:
